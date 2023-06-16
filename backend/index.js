@@ -46,7 +46,7 @@ wss.on("connection", function connection(ws) {
     console.log("Received From Client", data.toString("utf8"));
     const xyz = abc[data].split(" ");
 
-    const delay = 700;
+    const delay = 600;
     let index = 0;
 
     const interval = setInterval(() => {
