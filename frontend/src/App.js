@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import openConnection from "./socket/chat.js";
 import "./style.css";
 import {
   Box,
@@ -12,12 +11,12 @@ import {
   Select,
 } from "@chakra-ui/react";
 
-const socket = new WebSocket("ws://localhost:3001");
-
 const App = () => {
   const [message, setMessage] = useState(0);
   const [data, setData] = useState("");
   const [typing, setTyping] = useState(false);
+  const [ws, setWs] = useState(null);
+  const [isFree, setIsFree] = useState(true);
   const [myArr, setMyArr] = useState([
     "What's the core idea of SICP in 150 words?",
     "Why did Terry Davis go mad?",
@@ -28,12 +27,20 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    socket.send(message);
+
+    const socket = new WebSocket("ws://localhost:3001");
+    setWs(socket);
+
+    console.log("msg is", message);
+
+    socket.onopen = () => {
+      socket.send(message);
+    };
 
     let count = 1;
 
     socket.onmessage = (reply) => {
-      setTyping(true);
+      setIsFree(false);
       setTimeout(() => {
         setData((prevData) => prevData + reply.data + " ");
       }, count * 100);
@@ -48,18 +55,34 @@ const App = () => {
       count += 1;
     };
 
+    console.log("FREED");
+    setIsFree(true);
+
     setData("");
 
     console.log("dsads", data, data.length);
 
-    if (data.length === 0) {
-      setTyping(false);
-      console.log("ds");
-    }
+    // if (data.length === 0) {
+    //   setTyping(false);
+    //   console.log("ds");
+    // }
   };
 
   const handleInput = (event) => {
     setMessage(event.target.value);
+  };
+
+  const handleStop = (event) => {
+    console.log("aaassasas", event.target.value, ws);
+    setIsFree(true);
+    if (ws) {
+      console.log("aaassasas");
+      // setMessage(event.target.value);
+      // socket.send(message);
+      ws.close();
+      // setData(null);
+      // setMessage(0);
+    }
   };
 
   return (
@@ -68,7 +91,7 @@ const App = () => {
         <Box bg="gray.100" minW="100vw">
           <Center>
             <Heading as="h1" p="5px">
-              Better-gpt
+              Better-GPT
             </Heading>
           </Center>
         </Box>
@@ -81,8 +104,8 @@ const App = () => {
           borderBottom="1px solid"
           borderColor="gray.300"
         >
-          <span className={typing ? "cursor" : "cursor-done"}>
-            {data && data} {console.log("gg:", typing)}
+          <span className={isFree ? "cursor-done" : "cursor"}>
+            {data && data}
           </span>
         </Box>
 
@@ -92,15 +115,20 @@ const App = () => {
               <HStack>
                 <FormLabel>Select a Prompt</FormLabel>
                 {myArr && (
-                  <Select w="300px" onChange={handleInput}>
+                  <Select size="sm" w="400px" onChange={handleInput}>
                     {myArr.map((prompt, index) => (
-                      <option value={index}>{prompt}</option>
+                      <option className="opt" key={index} value={index}>
+                        {prompt}
+                      </option>
                     ))}
                   </Select>
                 )}
 
-                <Button type="submit" colorScheme="green">
+                <Button type="submit" colorScheme="green" isDisabled={!isFree}>
                   Enter
+                </Button>
+                <Button onClick={handleStop} value="stop" colorScheme="red">
+                  Stop
                 </Button>
               </HStack>
             </form>

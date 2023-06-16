@@ -43,12 +43,39 @@ wss.on("connection", function connection(ws) {
   console.log("Connected");
 
   ws.on("message", function message(data) {
+    console.log("received: %s", data, typeof data);
+    const msg = data.toString("utf8");
+    console.log("received: %s", msg, typeof msg);
+
     console.log("received: %s", data);
     const xyz = abc[data].split(" ");
     //console.log("asa", xyz);
-    xyz.forEach((word, index) => {
-      ws.send(word);
+
+    const delay = 500; // Delay in milliseconds
+    let index = 0;
+
+    const interval = setInterval(() => {
+      if (index < xyz.length) {
+        ws.send(xyz[index]);
+        index++;
+      } else {
+        clearInterval(interval);
+        ws.close(); // Stop the interval when all messages have been sent
+      }
+    }, delay);
+
+    //   xyz.forEach((word, index) => {
+    //     ws.send(word);
+    //   });
+    //   ws.close();
+
+    ws.on("close", function close() {
+      console.log("STOPEED");
+      ws.close();
     });
+
+    console.log("ha");
+
     //ws.send(abc);
   });
 });

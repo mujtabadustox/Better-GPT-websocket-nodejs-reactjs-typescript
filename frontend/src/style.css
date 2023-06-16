@@ -2,7 +2,9 @@
     width: 600px;
     animation: typing .5s, blink .5s infinite alternate;
     border-right: 3px solid;
-    font-size: 1rem;
+    font-family: monospace;
+    font-size: 1.5em;
+
     
 
 }
@@ -29,4 +31,8 @@
 
 .cursor-done {
     border-right: 0px;
+    width: 0px;
+    font-family: monospace;
+    font-size: 1.5em;
 }
+
