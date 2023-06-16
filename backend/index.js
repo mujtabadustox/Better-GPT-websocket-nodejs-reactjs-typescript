@@ -40,18 +40,13 @@ By leaving the question of whether or not K. finds The Castle unanswered, Kafka 
 const wss = new ws.Server({ server: server });
 
 wss.on("connection", function connection(ws) {
-  console.log("Connected");
+  console.log("Connection Opened");
 
   ws.on("message", function message(data) {
-    console.log("received: %s", data, typeof data);
-    const msg = data.toString("utf8");
-    console.log("received: %s", msg, typeof msg);
-
-    console.log("received: %s", data);
+    console.log("Received From Client", data.toString("utf8"));
     const xyz = abc[data].split(" ");
-    //console.log("asa", xyz);
 
-    const delay = 500; // Delay in milliseconds
+    const delay = 700;
     let index = 0;
 
     const interval = setInterval(() => {
@@ -60,23 +55,14 @@ wss.on("connection", function connection(ws) {
         index++;
       } else {
         clearInterval(interval);
-        ws.close(); // Stop the interval when all messages have been sent
+        ws.close();
       }
     }, delay);
 
-    //   xyz.forEach((word, index) => {
-    //     ws.send(word);
-    //   });
-    //   ws.close();
-
     ws.on("close", function close() {
-      console.log("STOPEED");
+      console.log("Connection Closed");
       ws.close();
     });
-
-    console.log("ha");
-
-    //ws.send(abc);
   });
 });
 

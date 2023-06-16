@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Center,
-  Flex,
   FormLabel,
   HStack,
   Heading,
@@ -14,7 +13,6 @@ import {
 const App = () => {
   const [message, setMessage] = useState(0);
   const [data, setData] = useState("");
-  const [typing, setTyping] = useState(false);
   const [ws, setWs] = useState(null);
   const [isFree, setIsFree] = useState(true);
   const [myArr, setMyArr] = useState([
@@ -31,8 +29,6 @@ const App = () => {
     const socket = new WebSocket("ws://localhost:3001");
     setWs(socket);
 
-    console.log("msg is", message);
-
     socket.onopen = () => {
       socket.send(message);
     };
@@ -45,27 +41,10 @@ const App = () => {
         setData((prevData) => prevData + reply.data + " ");
       }, count * 100);
 
-      // const xyz = reply.data.split(" ");
-
-      // xyz.forEach((word, index) => {
-      //   setTimeout(() => {
-      //     setData((prevData) => prevData + word + " ");
-      //   }, index * 1000);
-      // });
       count += 1;
     };
-
-    console.log("FREED");
     setIsFree(true);
-
     setData("");
-
-    console.log("dsads", data, data.length);
-
-    // if (data.length === 0) {
-    //   setTyping(false);
-    //   console.log("ds");
-    // }
   };
 
   const handleInput = (event) => {
@@ -73,15 +52,9 @@ const App = () => {
   };
 
   const handleStop = (event) => {
-    console.log("aaassasas", event.target.value, ws);
     setIsFree(true);
     if (ws) {
-      console.log("aaassasas");
-      // setMessage(event.target.value);
-      // socket.send(message);
       ws.close();
-      // setData(null);
-      // setMessage(0);
     }
   };
 
@@ -117,7 +90,7 @@ const App = () => {
                 {myArr && (
                   <Select size="sm" w="400px" onChange={handleInput}>
                     {myArr.map((prompt, index) => (
-                      <option className="opt" key={index} value={index}>
+                      <option key={index} value={index}>
                         {prompt}
                       </option>
                     ))}
